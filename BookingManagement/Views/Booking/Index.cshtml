@@ -1,0 +1,81 @@
+﻿@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    @(Html.Kendo().Scheduler<BookingManagement.Models.ViewModels.MeetingViewModel>()
+    .Name("scheduler")
+    .Date(DateTime.Now)
+    .StartTime(00, 00, 00)
+    .WorkDayStart(08, 30, 00)
+    .WorkDayEnd(18, 30, 00)
+    .Height(600)    
+    .Views(views =>
+    {
+        views.DayView();
+        views.WeekView(weekView => weekView.Selected(true));
+        views.MonthView();
+        views.AgendaView();
+        views.TimelineView();
+    })    
+    .Timezone("Asia/Rangoon")
+    .Resources(resource =>
+    {
+        resource.Add(m => m.RoomID)
+            .Title("Room")
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .DataColorField("Color")
+            .BindTo(new[] {
+                    new { Text = "Lashio Meeting Room", Value = 1, Color = "#f54b42" },
+                    new { Text = "Bagan Meeting Room", Value = 2, Color = "#f58d42" },
+                    new { Text = "Dawai Meeting Room", Value = 3, Color = "#f5c542" },
+                    new { Text = "Pathein Meeting Room", Value = 4, Color = "#e6f542" },
+                    new { Text = "Myitkyina Meeting Room", Value = 5, Color = "#adf542" },
+                    new { Text = "Sittwe Meeting Room", Value = 6, Color = "#0d449e" }
+            });
+        resource.Add(m => m.Attendees)
+            .Title("Attendees")
+            .Multiple(true)
+            .DataTextField("Email")
+            .DataValueField("AttendeeID")
+            .DataColorField("Color")
+            .DataSource(ds => ds
+                .Custom()
+                //Required in order to work with ToDataSourceResult
+                .Type("aspnetmvc-ajax")
+                .Transport(transport => transport.Read(read => read.Action("Read_Attendees", "Booking")))
+                .Schema(schema => schema
+                    //Required in order to work with ToDataSourceResult                    
+                    .Data("Data")
+                    .Total("Total")
+                    .Errors("Errors")
+                    .Model(model =>
+                    {
+                        model.Id("AttendeeID");
+                        model.Field("AttendeeID", typeof(int));
+                        model.Field("Email", typeof(string));
+                        model.Field("Color", typeof(string));
+                    })
+                )
+            );
+    })
+    .DataSource(d => d
+            .Model(m =>
+            {
+                m.Id(f => f.MeetingID);
+                m.Field(f => f.Title).DefaultValue("No title");
+                m.RecurrenceId(f => f.RecurrenceID);
+                m.Field(f => f.Title).DefaultValue("No title");
+            })
+        .Read("Meetings_Read", "Booking")
+        .Create("Meetings_Create", "Booking")
+        .Destroy("Meetings_Destroy", "Booking")
+        .Update("Meetings_Update", "Booking")
+    )
+)
+
+<style>
+    #scheduler {
+        margin-top: 10px;
+    }
+</style>

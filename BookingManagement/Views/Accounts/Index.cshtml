@@ -1,0 +1,144 @@
+﻿@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form id="loginForm" kendo-validator="true" asp-action="Login">
+    <div>
+        <h3>Login</h3>
+        <hr />
+    </div>
+    <ul id="fieldlist">
+        <li>
+            <label for="email" class="required">Email</label>
+            @(Html.Kendo().TextBox()
+                .Name("email")
+                .HtmlAttributes(new
+                {
+                    placeholder = "e.g. myname@company.com",
+                    required = "required",
+                    type = "email",
+                    data_email_msg = "Email format is not valid",
+                    style = "width: 280px;"
+                })
+            )
+        </li>
+        <li>
+            <label for="fullname" class="required">Password</label>
+            @(Html.Kendo().TextBox()
+                .Name("password")
+                .HtmlAttributes(new
+                {
+                    placeholder = "Type your password",
+                    required = "required",
+                    type = "password",
+                    style = "width:280px"
+                })
+            )
+        </li>
+        <li class="confirm">
+            <button class="k-button k-primary" type="submit">Submit</button>
+        </li>
+        <li class="status">
+        </li>
+    </ul>
+</form>
+
+<script>
+
+    $(function () {
+        var validator = $("#loginForm").data("kendoValidator");
+        var status = $(".status");
+
+        $("form").submit(function (event) {
+            event.preventDefault();
+            if (validator.validate()) {
+                status.text("Validating... Please wait!")
+                    .removeClass("invalid")
+                    .addClass("valid");
+                $("form").fadeOut("slow", () => {
+                    this.submit();
+                })
+            } else {
+                status.text("Oops! There is invalid data in the form.")
+                    .removeClass("valid")
+                    .addClass("invalid");
+            }
+        });
+    });
+</script>
+
+<style>
+    form {
+        border: 1px solid #ddd;
+        width: 320px;
+        margin: auto;
+        padding: 30px;
+        position: relative;
+        top: 240px;
+        border-radius: 15px;
+    }
+
+    #fieldlist {
+        margin: 0px;
+        padding: 0px;
+    }
+
+        #fieldlist li {
+            list-style: none;
+            padding-bottom: .7em;
+            text-align: left;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #fieldlist label {
+            width: 100%;
+            display: block;
+            padding-bottom: .3em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+
+        #fieldlist li.status {
+            text-align: center;
+        }
+
+        #fieldlist li .k-widget:not(.k-tooltip),
+        #fieldlist li .k-textbox {
+            margin: 0 5px 5px 0;
+        }
+
+    .confirm {
+        padding-top: 1em;
+    }
+
+    .valid {
+        color: green;
+    }
+
+    .invalid {
+        color: red;
+    }
+
+    #fieldlist li input[type="checkbox"] {
+        margin: 0 5px 0 0;
+    }
+
+    span.k-widget.k-tooltip-validation {
+        display: inline-block;
+        width: 160px;
+        text-align: left;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        background: none;
+        box-shadow: none;
+        color: red;
+    }
+
+    .k-tooltip-validation .k-warning {
+        display: none;
+    }
+</style>
